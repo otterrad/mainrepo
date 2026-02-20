@@ -49,10 +49,13 @@ function updateTime() {
   if (!isPaused) {
     let elapsed = Date.now() - startTime + elapsedBeforePause;
     document.getElementById('time').textContent = formatTime(elapsed);
+  }
 
+  if (totalStartTime !== 0) {
     totalElapsed = Date.now() - totalStartTime;
     document.getElementById('totalTime').textContent = "Total: " + formatTime(totalElapsed);
   }
+
   document.getElementById('laps').textContent = "Laps: " + laps;
 }
 
@@ -61,57 +64,70 @@ function startStopwatch() {
   timer = setInterval(updateTime, 10);
 }
 
-// Start/Pause button
+// Start/Pause
 document.getElementById('startPauseBtn').addEventListener('click', () => {
   if (isPaused) {
-    if (startTime === 0) { // first start
-      startTime = Date.now();
+
+    if (totalStartTime === 0) {
       totalStartTime = Date.now();
-      elapsedBeforePause = 0;
-      totalElapsed = 0;
-    } else {
-      startTime = Date.now();
     }
+
+    startTime = Date.now();
     isPaused = false;
     document.getElementById('startPauseBtn').textContent = "⏸️";
     startStopwatch();
+
   } else {
+
     clearInterval(timer);
     elapsedBeforePause += Date.now() - startTime;
     isPaused = true;
     document.getElementById('startPauseBtn').textContent = "▶️";
+
   }
 });
 
 // Working/Resting toggle
 document.getElementById('workBtn').addEventListener('click', () => {
+
+  if (totalStartTime === 0) {
+    totalStartTime = Date.now();
+  }
+
   isWorking = !isWorking;
   document.getElementById('workBtn').textContent = isWorking ? "Working" : "Resting";
 
   startTime = Date.now();
   elapsedBeforePause = 0;
   isPaused = false;
+
   document.getElementById('startPauseBtn').textContent = "⏸️";
 
   laps++;
   startStopwatch();
 });
 
-// Reset/Stop button
+// Reset
 document.getElementById('resetBtn').addEventListener('click', () => {
+
   clearInterval(timer);
+
   startTime = 0;
   elapsedBeforePause = 0;
   totalStartTime = 0;
   totalElapsed = 0;
   laps = 0;
+
   isPaused = true;
   isWorking = true;
+
   document.getElementById('time').textContent = "00:00:00";
   document.getElementById('totalTime').textContent = "Total: 00:00:00";
   document.getElementById('laps').textContent = "Laps: 0";
+
   document.getElementById('workBtn').textContent = "Working";
   document.getElementById('startPauseBtn').textContent = "▶️";
+
 });
 
 updateTime();
