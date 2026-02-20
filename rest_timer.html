@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gym Timer</title>
 <style>
+
   body {
     font-family: sans-serif;
     margin: 0;
@@ -12,7 +13,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #ffffff;
+    background: #111111;
+    color: #ffffff;
+    background: #000000; /* full black background */
+    transition: background 0.5s ease-in-out; /* smooth color change */
   }
 
   .container {
@@ -28,13 +32,32 @@
     font-weight: 400;
     margin-bottom: 20px;
     text-align: center;
+    color: #ffffff;
+  }
+
+  button {
+    flex: 1;
+    font-size: 1.5em;
+    padding: 12px 25px;
+    color: #ffffff;
+    border-radius: 8px;
   }
 
   #workBtn {
     width: 100%;
     font-size: 1.5em;
-    padding: 12px;
+    padding: 14px;
     margin-bottom: 15px;
+  }
+
+  .working {
+    background: #18251B;
+    border: 1px solid #248E39;
+  }
+
+  .resting {
+    background: #312000;
+    border: 1px solid #B06400;
   }
 
   .button-row {
@@ -44,10 +67,9 @@
     margin-bottom: 15px;
   }
 
-  button {
-    flex: 1;
-    font-size: 1.5em;
-    padding: 12px 25px;
+  .control-btn {
+    background: #232323;
+    border: 1px solid #444444;
   }
 
   #info {
@@ -55,7 +77,17 @@
     justify-content: space-between;
     width: 100%;
     font-size: 1em;
+    color: #cccccc;
   }
+  
+    button {
+    transition: transform 0.2s ease;
+  }
+
+    button:active {
+    transform: scale(0.95);
+  }
+  
 </style>
 </head>
 <body>
@@ -64,11 +96,11 @@
 
   <div id="time">00:00:00</div>
 
-  <button id="workBtn">Working</button>
+  <button id="workBtn" class="working">Working out</button>
 
   <div class="button-row">
-    <button id="startPauseBtn">▶</button>
-    <button id="resetBtn">⏹</button>
+    <button id="startPauseBtn" class="control-btn">▶</button>
+    <button id="resetBtn" class="control-btn">⏹</button>
   </div>
 
   <div id="info">
@@ -129,26 +161,21 @@ document.getElementById('startPauseBtn').addEventListener('click', () => {
 
     startTime = Date.now();
     isPaused = false;
-
     document.getElementById('startPauseBtn').textContent = "⏸";
-
     startStopwatch();
 
   } else {
 
     clearInterval(timer);
-
     elapsedBeforePause += Date.now() - startTime;
-
     isPaused = true;
-
     document.getElementById('startPauseBtn').textContent = "▶";
 
   }
 
 });
 
-// Working / Resting
+// Working out / Resting
 document.getElementById('workBtn').addEventListener('click', () => {
 
   if (totalStartTime === 0) {
@@ -157,8 +184,17 @@ document.getElementById('workBtn').addEventListener('click', () => {
 
   isWorking = !isWorking;
 
-  document.getElementById('workBtn').textContent =
-    isWorking ? "Working" : "Resting";
+  const workBtn = document.getElementById('workBtn');
+
+  if (isWorking) {
+    workBtn.textContent = "Working out";
+    workBtn.classList.remove("resting");
+    workBtn.classList.add("working");
+  } else {
+    workBtn.textContent = "Resting";
+    workBtn.classList.remove("working");
+    workBtn.classList.add("resting");
+  }
 
   startTime = Date.now();
   elapsedBeforePause = 0;
@@ -167,7 +203,6 @@ document.getElementById('workBtn').addEventListener('click', () => {
   document.getElementById('startPauseBtn').textContent = "⏸";
 
   laps++;
-
   startStopwatch();
 
 });
@@ -190,12 +225,34 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   document.getElementById('totalTime').textContent = "Total: 00:00:00";
   document.getElementById('laps').textContent = "Laps: 0";
 
-  document.getElementById('workBtn').textContent = "Working";
+  const workBtn = document.getElementById('workBtn');
+  workBtn.textContent = "Working out";
+  workBtn.classList.remove("resting");
+  workBtn.classList.add("working");
+
   document.getElementById('startPauseBtn').textContent = "▶";
 
 });
 
 updateTime();
+
+let blinkInterval;
+
+function startRestBlink() {
+  clearInterval(blinkInterval);
+  let toggle = false;
+  blinkInterval = setInterval(() => {
+    if (!isWorking) { // only blink during resting
+      document.body.style.background = toggle ? "#000000" : "#1C1C1C";
+      toggle = !toggle;
+    } else {
+      document.body.style.background = "#000000"; // reset when working
+    }
+  }, 500); // 500ms = half-second blink
+}
+
+startRestBlink(); // start the loop
+
 </script>
 
 </body>
