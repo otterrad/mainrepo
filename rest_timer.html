@@ -255,6 +255,12 @@ function startRestBlink() {
 
 startRestBlink(); // start the loop
 
+
+// iOS hack: force :active on touch
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('touchstart', ()=>{}, {passive:true});
+});
+
 </script>
 
 </body>
