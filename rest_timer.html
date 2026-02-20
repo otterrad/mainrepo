@@ -16,7 +16,7 @@
     background: #111111;
     color: #ffffff;
     background: #000000; /* full black background */
-    transition: background 0.5s ease-in-out; /* smooth color change */
+    transition: background 0.3s ease-in-out; /* smooth color change */
   }
 
   .container {
@@ -41,6 +41,11 @@
     padding: 12px 25px;
     color: #ffffff;
     border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
+
+    button:active {
+    transform: scale(0.95);
   }
 
   #workBtn {
@@ -64,12 +69,13 @@
     display: flex;
     width: 100%;
     gap: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
 
   .control-btn {
     background: #232323;
     border: 1px solid #444444;
+    color: #cccccc;
   }
 
   #info {
@@ -79,14 +85,7 @@
     font-size: 1em;
     color: #cccccc;
   }
-  
-    button {
-    transition: transform 0.2s ease;
-  }
 
-    button:active {
-    transform: scale(0.95);
-  }
   
 </style>
 </head>
@@ -99,8 +98,8 @@
   <button id="workBtn" class="working">Working out</button>
 
   <div class="button-row">
-    <button id="startPauseBtn" class="control-btn">▶</button>
-    <button id="resetBtn" class="control-btn">⏹</button>
+    <button id="startPauseBtn" class="control-btn">Play</button>
+    <button id="resetBtn" class="control-btn">Reset</button>
   </div>
 
   <div id="info">
@@ -161,7 +160,7 @@ document.getElementById('startPauseBtn').addEventListener('click', () => {
 
     startTime = Date.now();
     isPaused = false;
-    document.getElementById('startPauseBtn').textContent = "⏸";
+    document.getElementById('startPauseBtn').textContent = "Pause";
     startStopwatch();
 
   } else {
@@ -169,7 +168,7 @@ document.getElementById('startPauseBtn').addEventListener('click', () => {
     clearInterval(timer);
     elapsedBeforePause += Date.now() - startTime;
     isPaused = true;
-    document.getElementById('startPauseBtn').textContent = "▶";
+    document.getElementById('startPauseBtn').textContent = "Play";
 
   }
 
@@ -200,7 +199,7 @@ document.getElementById('workBtn').addEventListener('click', () => {
   elapsedBeforePause = 0;
   isPaused = false;
 
-  document.getElementById('startPauseBtn').textContent = "⏸";
+  document.getElementById('startPauseBtn').textContent = "Pause";
 
   laps++;
   startStopwatch();
@@ -230,7 +229,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   workBtn.classList.remove("resting");
   workBtn.classList.add("working");
 
-  document.getElementById('startPauseBtn').textContent = "▶";
+  document.getElementById('startPauseBtn').textContent = "Play";
 
 });
 
