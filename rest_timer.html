@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym Timer</title>
+<style>
+  body { font-family: sans-serif; text-align: center; padding-top: 30px; position: relative; }
+  #time { font-size: 4em; font-weight: bold; margin-bottom: 20px; }
+  .button-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; }
+  button { font-size: 1.5em; padding: 10px 20px; }
+  #info { display: flex; justify-content: space-between; padding: 0 20px; font-size: 1em; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div id="time">00:00:00</div>
+
+<div class="button-row">
+  <button id="startPauseBtn">▶️</button>
+  <button id="workBtn">Working</button>
+  <button id="resetBtn">⏹️</button>
+</div>
+
+<div id="info">
+  <div id="totalTime">Total: 00:00:00</div>
+  <div id="laps">Laps: 0</div>
+</div>
+
+<script>
+let startTime = 0;
+let elapsedBeforePause = 0;
+let totalStartTime = 0;
+let totalElapsed = 0;
+let timer;
+let isPaused = true;
+let isWorking = true;
+let laps = 0;
+
+function formatTime(ms) {
+  let minutes = Math.floor(ms / 60000);
+  let seconds = Math.floor((ms % 60000) / 1000);
+  let milliseconds = Math.floor((ms % 1000) / 10);
+  return `${minutes.toString().padStart(2,'0')}:` +
+         `${seconds.toString().padStart(2,'0')}:` +
+         `${milliseconds.toString().padStart(2,'0')}`;
+}
+
+function updateTime() {
+  if (!isPaused) {
+    let elapsed = Date.now() - startTime + elapsedBeforePause;
+    document.getElementById('time').textContent = formatTime(elapsed);
+
+    totalElapsed = Date.now() - totalStartTime;
+    document.getElementById('totalTime').textContent = "Total: " + formatTime(totalElapsed);
+  }
+  document.getElementById('laps').textContent = "Laps: " + laps;
+}
+
+function startStopwatch() {
+  clearInterval(timer);
+  timer = setInterval(updateTime, 10);
+}
+
+// Start/Pause button
+document.getElementById('startPauseBtn').addEventListener('click', () => {
+  if (isPaused) {
+    if (startTime === 0) { // first start
+      startTime = Date.now();
+      totalStartTime = Date.now();
+      elapsedBeforePause = 0;
+      totalElapsed = 0;
+    } else {
+      startTime = Date.now();
+    }
+    isPaused = false;
+    document.getElementById('startPauseBtn').textContent = "⏸️";
+    startStopwatch();
+  } else {
+    clearInterval(timer);
+    elapsedBeforePause += Date.now() - startTime;
+    isPaused = true;
+    document.getElementById('startPauseBtn').textContent = "▶️";
+  }
+});
+
+// Working/Resting toggle
+document.getElementById('workBtn').addEventListener('click', () => {
+  isWorking = !isWorking;
+  document.getElementById('workBtn').textContent = isWorking ? "Working" : "Resting";
+
+  startTime = Date.now();
+  elapsedBeforePause = 0;
+  isPaused = false;
+  document.getElementById('startPauseBtn').textContent = "⏸️";
+
+  laps++;
+  startStopwatch();
+});
+
+// Reset/Stop button
+document.getElementById('resetBtn').addEventListener('click', () => {
+  clearInterval(timer);
+  startTime = 0;
+  elapsedBeforePause = 0;
+  totalStartTime = 0;
+  totalElapsed = 0;
+  laps = 0;
+  isPaused = true;
+  isWorking = true;
+  document.getElementById('time').textContent = "00:00:00";
+  document.getElementById('totalTime').textContent = "Total: 00:00:00";
+  document.getElementById('laps').textContent = "Laps: 0";
+  document.getElementById('workBtn').textContent = "Working";
+  document.getElementById('startPauseBtn').textContent = "▶️";
+});
+
+updateTime();
+</script>
+</body>
+</html>
