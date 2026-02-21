@@ -11,107 +11,110 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
-
-  body {
-    font-family: sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #000000;
-    color: #ffffff;
-  }
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 80%;
-    max-width: 400px;
-  }
-
-  #time {
-    margin-bottom: 40px;
-    text-align: center;
-    line-height: 0.85;
-    font-family: 'Roboto Mono', monospace;
-  }
-
-  #minutes, #seconds {
-    display: block;
-    font-size: 10em;
-    font-weight: 400;
-  }
-
-  button, #time, #totalTime, #laps {
-  user-select: none; /* standard */
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE/Edge */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000000;
+  color: #ffffff;
 }
 
-  button {
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.2s ease;
-    cursor: pointer;
-  }
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  max-width: 400px;
+}
 
-  button:active {
-    transform: scale(0.95);
-  }
+#time {
+  margin-bottom: 40px;
+  text-align: center;
+  line-height: 0.85;
+  font-family: 'Roboto Mono', monospace;
+}
 
-  #workBtn {
-    font-size: 2em;
-    font-family: 'Oswald', sans-serif;
-    width: 180px;
-    height: 180px;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
+#minutes, #seconds {
+  display: block;
+  font-size: 10em;
+  font-weight: 400;
+}
 
-  .working {
-    color: #3E6B16;
-    background: #8EEC3B;
-    border: 2px solid #D8FDB7;
-  }
+button, #time, #totalTime, #laps {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
 
-  .resting {
-    color: #9A3600;
-    background: #FFB41F;
-    border: 2px solid #FFDD99;
-  }
+button {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
 
-  .button-row {
-    display: flex;
-    justify-content: space-between;
-    width: 180px;
-    margin-bottom: 20px;
-  }
+button:active {
+  transform: scale(0.95);
+}
 
-  .control-btn {
-    width: 80px;
-    height: 80px;
-    background: transparent;
-    border: 2px solid #444444;
-    color: #ffffff;
-  }
+#workBtn {
+  font-size: 2em;
+  font-family: 'Oswald', sans-serif;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding: 0;
+}
 
-  #info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 1em;
-    color: #cccccc;
-    gap: 5px;
-  }
+.working {
+  color: #3E6B16;
+  background: #8EEC3B;
+  border: 2px solid #D8FDB7;
+}
 
-  .material-icons {
-    font-size: 3em;
-  }
+.resting {
+  color: #9A3600;
+  background: #FFB41F;
+  border: 2px solid #FFDD99;
+}
 
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  width: 180px;
+  margin-bottom: 20px;
+}
+
+.control-btn {
+  width: 80px;
+  height: 80px;
+  background: transparent;
+  border: 2px solid #444444;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1em;
+  color: #cccccc;
+  gap: 5px;
+}
+
+.material-icons {
+  font-size: 3em; /* smaller icons */
+}
 </style>
 </head>
 <body>
@@ -123,7 +126,7 @@
     <span id="seconds">00</span>
   </div>
 
-  <button id="workBtn" class="working">TRAINING</button>
+  <button id="workBtn" style="background:#ffffff;color:#000000;">START</button>
 
   <div class="button-row">
     <button id="startPauseBtn" class="control-btn">
@@ -150,24 +153,38 @@ let timer;
 let isPaused = true;
 let isWorking = true;
 let laps = 0;
+let isStarted = false;
+
+const minutesEl = document.getElementById('minutes');
+const secondsEl = document.getElementById('seconds');
+const workBtn = document.getElementById('workBtn');
+const startPauseBtn = document.getElementById('startPauseBtn');
+const resetBtn = document.getElementById('resetBtn');
 
 function updateTimerColor() {
-  const minutesEl = document.getElementById('minutes');
-  const secondsEl = document.getElementById('seconds');
-  if (isWorking) {
+  if (!isStarted) {
+    minutesEl.style.color = "#ffffff";
+    secondsEl.style.color = "#ffffff";
+    workBtn.style.background = "#ffffff";
+    workBtn.style.color = "#000000";
+  } else if (isWorking) {
     minutesEl.style.color = "#8EEC3B";
     secondsEl.style.color = "#8EEC3B";
+    workBtn.style.background = "#8EEC3B";
+    workBtn.style.color = "#3E6B16";
   } else {
     minutesEl.style.color = "#FFB41F";
     secondsEl.style.color = "#FFB41F";
+    workBtn.style.background = "#FFB41F";
+    workBtn.style.color = "#9A3600";
   }
 }
 
 function formatMainTime(ms) {
   let minutes = Math.floor(ms / 60000);
   let seconds = Math.floor((ms % 60000) / 1000);
-  document.getElementById('minutes').textContent = minutes.toString().padStart(2,'0');
-  document.getElementById('seconds').textContent = seconds.toString().padStart(2,'0');
+  minutesEl.textContent = minutes.toString().padStart(2,'0');
+  secondsEl.textContent = seconds.toString().padStart(2,'0');
 }
 
 function formatTotalTime(ms) {
@@ -177,7 +194,7 @@ function formatTotalTime(ms) {
 }
 
 function updateTime() {
-  if (!isPaused) {
+  if (!isPaused && isStarted) {
     let elapsed = Date.now() - startTime + elapsedBeforePause;
     formatMainTime(elapsed);
   }
@@ -193,28 +210,23 @@ function startStopwatch() {
   timer = setInterval(updateTime, 100);
 }
 
-// Start / Pause
-const startPauseBtn = document.getElementById('startPauseBtn');
-startPauseBtn.addEventListener('click', () => {
-  const icon = startPauseBtn.querySelector('.material-icons');
-  if (isPaused) {
-    if (totalStartTime === 0) totalStartTime = Date.now();
-    startTime = Date.now();
-    isPaused = false;
-    icon.textContent = "pause";
-    startStopwatch();
-  } else {
-    clearInterval(timer);
-    elapsedBeforePause += Date.now() - startTime;
-    isPaused = true;
-    icon.textContent = "play_arrow";
-  }
-});
-
-// Training / Resting
-const workBtn = document.getElementById('workBtn');
+// START / WORKING BUTTON CLICK
 workBtn.addEventListener('click', () => {
-  if (totalStartTime === 0) totalStartTime = Date.now();
+  if (!isStarted) {
+    isStarted = true;
+    isWorking = true;
+    workBtn.textContent = "TRAINING";
+    workBtn.classList.add("working");
+    document.body.style.background = "#1A1E17";
+    updateTimerColor();
+    startTime = Date.now();
+    totalStartTime = Date.now();
+    isPaused = false;
+    startPauseBtn.querySelector('.material-icons').textContent = "pause";
+    startStopwatch();
+    return;
+  }
+
   isWorking = !isWorking;
   if (isWorking) {
     workBtn.textContent = "TRAINING";
@@ -236,8 +248,25 @@ workBtn.addEventListener('click', () => {
   startStopwatch();
 });
 
-// Reset
-const resetBtn = document.getElementById('resetBtn');
+// PLAY/PAUSE
+startPauseBtn.addEventListener('click', () => {
+  if (!isStarted) return; // do nothing if not started yet
+  const icon = startPauseBtn.querySelector('.material-icons');
+  if (isPaused) {
+    if (totalStartTime === 0) totalStartTime = Date.now();
+    startTime = Date.now();
+    isPaused = false;
+    icon.textContent = "pause";
+    startStopwatch();
+  } else {
+    clearInterval(timer);
+    elapsedBeforePause += Date.now() - startTime;
+    isPaused = true;
+    icon.textContent = "play_arrow";
+  }
+});
+
+// RESET
 resetBtn.addEventListener('click', () => {
   clearInterval(timer);
   startTime = 0;
@@ -247,16 +276,21 @@ resetBtn.addEventListener('click', () => {
   laps = 0;
   isPaused = true;
   isWorking = true;
-  document.getElementById('minutes').textContent = "00";
-  document.getElementById('seconds').textContent = "00";
+  isStarted = false;
+
+  minutesEl.textContent = "00";
+  secondsEl.textContent = "00";
   document.getElementById('totalTime').textContent = "Total: 00:00";
   document.getElementById('laps').textContent = "Laps: 0";
-  workBtn.textContent = "TRAINING";
-  workBtn.classList.remove("resting");
-  workBtn.classList.add("working");
+
+  workBtn.textContent = "START";
+  workBtn.classList.remove("working", "resting");
+  workBtn.style.background = "#ffffff";
+  workBtn.style.color = "#000000";
   document.body.style.background = "#000000";
-  updateTimerColor();
+
   startPauseBtn.querySelector('.material-icons').textContent = "play_arrow";
+  updateTimerColor();
 });
 
 // iOS touch fix
@@ -266,7 +300,6 @@ document.querySelectorAll('button').forEach(btn => {
 
 updateTimerColor();
 updateTime();
-
 </script>
 
 </body>
