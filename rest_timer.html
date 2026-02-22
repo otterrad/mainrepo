@@ -75,29 +75,31 @@ button:active {
 
 .working {
   color: #3E6B16;
-  background: #8EEC3B;
-  border: 2px solid #D8FDB7;
+  background: radial-gradient(50% 50% at 50% 50%, #D8FDB7 0%, #8EEC3B 100%);
+  box-shadow: 0px 0px 50px 0px hsla(96, 83%, 57%, 0.5);
+  border: 1px solid #D8FDB7;
 }
 
 .resting {
-  color: #9A3600;
-  background: #FFB41F;
-  border: 2px solid #FFDD99;
+  color: #C24502;
+  background: radial-gradient(50% 50% at 50% 50%, #FFDD99 0%, #FFB41F 100%);
+  box-shadow: 0px 0px 50px 0px hsla(42, 100%, 56%, 0.5);
+  border: 1px solid #FFDD99;
 }
 
 .button-row {
   display: flex;
   justify-content: space-between;
-  width: 180px;
+  width: 160px;
   margin-bottom: 20px;
 }
 
 .control-btn {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background: transparent;
-  border: 2px solid #444444;
-  color: #ffffff;
+  border: 2px solid hsla(0, 0%, 100%, 0.2);
+  color: hsla(0, 0%, 100%, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -108,12 +110,12 @@ button:active {
   flex-direction: column;
   align-items: center;
   font-size: 1em;
-  color: #cccccc;
+  color: hsla(0, 0%, 100%, 0.6);
   gap: 5px;
 }
 
 .material-icons {
-  font-size: 3em; /* smaller icons */
+  font-size: 3em;
 }
 </style>
 </head>
@@ -138,8 +140,8 @@ button:active {
   </div>
 
   <div id="info">
-    <div id="totalTime">Total: 00:00</div>
-    <div id="laps">Laps: 0</div>
+    <div id="totalTime">Duration: 00:00</div>
+    <div id="laps">Sets: 0</div>
   </div>
 
 </div>
@@ -170,13 +172,13 @@ function updateTimerColor() {
   } else if (isWorking) {
     minutesEl.style.color = "#8EEC3B";
     secondsEl.style.color = "#8EEC3B";
-    workBtn.style.background = "#8EEC3B";
+    workBtn.style.background = "";
     workBtn.style.color = "#3E6B16";
   } else {
     minutesEl.style.color = "#FFB41F";
     secondsEl.style.color = "#FFB41F";
-    workBtn.style.background = "#FFB41F";
-    workBtn.style.color = "#9A3600";
+    workBtn.style.background = "";
+    workBtn.style.color = "#C24502";
   }
 }
 
@@ -200,9 +202,9 @@ function updateTime() {
   }
   if (totalStartTime !== 0) {
     totalElapsed = Date.now() - totalStartTime;
-    document.getElementById('totalTime').textContent = "Total: " + formatTotalTime(totalElapsed);
+    document.getElementById('totalTime').textContent = "Duration: " + formatTotalTime(totalElapsed);
   }
-  document.getElementById('laps').textContent = "Laps: " + laps;
+  document.getElementById('laps').textContent = "Sets: " + laps;
 }
 
 function startStopwatch() {
@@ -210,7 +212,6 @@ function startStopwatch() {
   timer = setInterval(updateTime, 100);
 }
 
-// START / WORKING BUTTON CLICK
 workBtn.addEventListener('click', () => {
   if (!isStarted) {
     isStarted = true;
@@ -224,33 +225,39 @@ workBtn.addEventListener('click', () => {
     isPaused = false;
     startPauseBtn.querySelector('.material-icons').textContent = "pause";
     startStopwatch();
+    laps++;
+    updateTime();
     return;
   }
 
+  const wasWorking = isWorking;
   isWorking = !isWorking;
+
   if (isWorking) {
     workBtn.textContent = "TRAINING";
     workBtn.classList.remove("resting");
     workBtn.classList.add("working");
     document.body.style.background = "#1A1E17";
+
+    if (!wasWorking) laps++;
   } else {
     workBtn.textContent = "RESTING";
     workBtn.classList.remove("working");
     workBtn.classList.add("resting");
     document.body.style.background = "#22160E";
   }
+
   updateTimerColor();
   startTime = Date.now();
   elapsedBeforePause = 0;
   isPaused = false;
   startPauseBtn.querySelector('.material-icons').textContent = "pause";
-  laps++;
   startStopwatch();
+  updateTime();
 });
 
-// PLAY/PAUSE
 startPauseBtn.addEventListener('click', () => {
-  if (!isStarted) return; // do nothing if not started yet
+  if (!isStarted) return;
   const icon = startPauseBtn.querySelector('.material-icons');
   if (isPaused) {
     if (totalStartTime === 0) totalStartTime = Date.now();
@@ -266,7 +273,6 @@ startPauseBtn.addEventListener('click', () => {
   }
 });
 
-// RESET
 resetBtn.addEventListener('click', () => {
   clearInterval(timer);
   startTime = 0;
@@ -280,8 +286,8 @@ resetBtn.addEventListener('click', () => {
 
   minutesEl.textContent = "00";
   secondsEl.textContent = "00";
-  document.getElementById('totalTime').textContent = "Total: 00:00";
-  document.getElementById('laps').textContent = "Laps: 0";
+  document.getElementById('totalTime').textContent = "Duration: 00:00";
+  document.getElementById('laps').textContent = "Sets: 0";
 
   workBtn.textContent = "START";
   workBtn.classList.remove("working", "resting");
@@ -293,7 +299,6 @@ resetBtn.addEventListener('click', () => {
   updateTimerColor();
 });
 
-// iOS touch fix
 document.querySelectorAll('button').forEach(btn => {
   btn.addEventListener('touchstart', ()=>{}, {passive:true});
 });
